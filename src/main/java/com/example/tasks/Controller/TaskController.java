@@ -4,10 +4,10 @@ import com.example.tasks.Model.Task;
 import com.example.tasks.Model.Task.Situacao;
 import com.example.tasks.Service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/task")
@@ -21,9 +21,15 @@ public class TaskController {
     }
 
     //Get
+    @GetMapping("/buscar")
+    public List<Task> buscarTodos() {
+        return taskService.buscarTodos();
+    }
     @GetMapping("/buscar/id")
-    public Optional<Task> buscarPorId(@RequestParam("id")Long id){
-        return taskService.buscarPorId(id);
+    @ResponseBody
+    public Task buscarPorId(@RequestParam("id") Long id) {
+        return taskService.buscarPorId(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
     }
     @GetMapping("/buscar/titulo")
     public List<Task> buscarPorTitulo(@RequestParam("titulo")String titulo){

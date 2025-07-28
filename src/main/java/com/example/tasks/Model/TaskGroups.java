@@ -1,13 +1,18 @@
 package com.example.tasks.Model;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-
+import lombok.*;
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Table(name = "taskgroups")
+@Data
+@AllArgsConstructor
+@Getter
+@Setter
 public class TaskGroups {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,41 +33,17 @@ public class TaskGroups {
     public TaskGroups() {
         this.dtCriacao = LocalDate.now();
     }
-    public TaskGroups (String nome, String descricao, Board board) {
+    public TaskGroups (Long id, String nome, Board board) {
+        this.id = id;
         this.nome = nome;
         this.board = board;
         this.dtCriacao = LocalDate.now();
     }
 
-    //Gets & Sets
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public Board getBoard() {
-        return board;
-    }
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-
-    public LocalDate getDtCriacao() {
-        return dtCriacao;
-    }
-
-    public List<Task> getTaskList() {
-        return taskList;
-    }
-    public void setTaskList(List<Task> taskList) {
-        this.taskList = taskList;
+    //toString
+    @Override
+    public String toString(){
+        return STR."id_taskgroup, nome, id_board, dt_criacao = [\{getId()}, \{getNome()}, \{getBoard().getId()}, \{getDtCriacao()}]";
     }
 }
 

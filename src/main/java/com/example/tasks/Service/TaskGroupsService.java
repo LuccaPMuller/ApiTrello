@@ -5,7 +5,6 @@ import com.example.tasks.Model.TaskGroups;
 import com.example.tasks.Repository.BoardRepository;
 import com.example.tasks.Repository.TaskGroupsRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +20,9 @@ public class TaskGroupsService {
     }
 
     //Gets
+    public List<TaskGroups> buscarTodos(){
+        return taskGroupsRepository.findAll();
+    }
     public Optional<TaskGroups> buscarPorId(Long id){
         return taskGroupsRepository.findById(id);
     }
@@ -36,11 +38,21 @@ public class TaskGroupsService {
         return taskGroupsRepository.findByBoardNomeContainingIgnoreCase(nome);
     }
 
-    //Post
+    // Post
     public TaskGroups salvar(TaskGroups taskGroups) {
+        if(taskGroups.getNome() == null || taskGroups.getNome().trim().isEmpty() || taskGroups.getNome().length() < 3) {
+            throw new IllegalArgumentException("Nome deve conter no minimo 3 caracteres.");
+        }
+        if(taskGroups.getBoard() == null) {
+            throw new IllegalArgumentException("TaskGroup deve ter um Board");
+        }
         Long boardId = taskGroups.getBoard().getId();
         Optional<Board> board = boardRepository.findById(boardId);
-        taskGroups.setBoard(board.orElse(null));
+        if(board.isEmpty()) {
+            throw new IllegalArgumentException("Board associado não encontrado");
+        }
+
+        taskGroups.setBoard(board.get());
         return taskGroupsRepository.save(taskGroups);
     }
 

@@ -1,0 +1,9 @@
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <logger name="org.hibernate.SQL" level="OFF"/>
+    <logger name="org.hibernate.type.descriptor.sql" level="OFF"/>
+
+    <!-- Mantém seus logs de aplicação -->
+    <logger name="com.example.tasks" level="DEBUG"/>
+</configuration>

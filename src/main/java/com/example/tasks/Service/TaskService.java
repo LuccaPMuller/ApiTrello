@@ -6,9 +6,10 @@ import com.example.tasks.Model.TaskGroups;
 import com.example.tasks.Repository.TaskGroupsRepository;
 import com.example.tasks.Repository.TaskRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+
+import static com.example.tasks.Model.Task.Situacao.TODO;
 
 @Service
 public class TaskService {
@@ -22,6 +23,9 @@ public class TaskService {
     }
 
     //Gets
+    public List<Task> buscarTodos(){
+        return taskRepository.findAll();
+    }
     public Optional<Task> buscarPorId(Long id){
         return taskRepository.findById(id);
     }
@@ -38,11 +42,26 @@ public class TaskService {
         return taskRepository.findByTaskGroupsNomeContainingIgnoreCase(nome);
     }
 
-    //Post
+    // Post
     public Task salvar(Task task) {
+        if(task.getTitulo() == null || task.getTitulo().trim().isEmpty()) {
+            throw new IllegalArgumentException("Título é obrigatório.");
+        }
+        if(task.getSituacao() == null ||
+                !(task.getSituacao() == TODO ||
+                        task.getSituacao() == Situacao.IN_PROGRESS ||
+                        task.getSituacao() == Situacao.DONE)) {
+            throw new IllegalArgumentException("Situação deve ser TODO, IN_PROGRESS ou DONE");
+        }
+        if(task.getTaskGroups() == null) {
+            throw new IllegalArgumentException("Task deve ter um TaskGroup");
+        }
         Long taskGroupsId = task.getTaskGroups().getId();
         Optional<TaskGroups> taskGroups = taskGroupsRepository.findById(taskGroupsId);
-        task.setTaskGroups(taskGroups.orElse(null));
+        if(taskGroups.isEmpty()) {
+            throw new IllegalArgumentException("TaskGroup associado não encontrado");
+        }
+        task.setTaskGroups(taskGroups.get());
         return taskRepository.save(task);
     }
 

@@ -3,10 +3,10 @@ package com.example.tasks.Controller;
 import com.example.tasks.Model.TaskGroups;
 import com.example.tasks.Service.TaskGroupsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/taskGroups")
@@ -20,9 +20,15 @@ public class TaskGroupsController {
     }
 
     //Gets
+    @GetMapping("/buscar")
+    public List<TaskGroups> buscarTodos() {
+        return taskGroupsService.buscarTodos();
+    }
     @GetMapping("/buscar/id")
-    public Optional<TaskGroups> buscarPorId(@RequestParam("id") Long id) {
-        return taskGroupsService.buscarPorId(id);
+    @ResponseBody
+    public TaskGroups buscarPorId(@RequestParam("id") Long id) {
+        return taskGroupsService.buscarPorId(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "TaskGroup not found"));
     }
     @GetMapping("/buscar/nome")
     public List<TaskGroups> buscarPorNome(@RequestParam("nome") String nome){
